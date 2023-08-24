@@ -1,0 +1,6 @@
+__pycache__/
+versions/*
+env/
+.env
+*.mako
+.vscode
