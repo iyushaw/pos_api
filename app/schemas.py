@@ -1,6 +1,50 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
+##############################################################################
+#                                                                            #
+#                                   Customer Models                          #
+#                                                                            #
+##############################################################################
+
+
+class CreateCustomer(BaseModel):
+    customer_code: str
+    customer_name: str
+    contact: str
+    address: str
+
+
+class UpdateCustomer(BaseModel):
+    customer_code: str
+    customer_name: str
+    contact: str
+    address: str
+
+
+class CustomerResponse(BaseModel):
+    customer_code: str
+    customer_name: str
+    contact: str
+    address: str
+
+
+class GetCustomer(BaseModel):
+    customer_code: str
+    customer_name: str
+    contact: str
+    address: str
+
+    class Config:
+        orm = True
+
+
+##############################################################################
+#                                                                            #
+#                                   User Models                              #
+#                                                                            #
+##############################################################################
+
 
 class CreateUser(BaseModel):
     username: str
@@ -55,3 +99,14 @@ class UserResponse(BaseModel):
     designation: int
     contact: str
     account_type: int
+
+
+class GetCustomers(BaseModel):
+    customer_id: int
+    customer_code: str
+    customer_name: str
+    contact: str
+    address: str
+
+    class Config:
+        orm = True
