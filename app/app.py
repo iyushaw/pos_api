@@ -1,10 +1,9 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Path
+import os
+from fastapi import FastAPI, HTTPException, status, Path
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from schemas import GetUsers, GetUser, CreateUser, UserResponse, UpdateUser
 from dotenv import load_dotenv
 from models import User
-import sys
-import os
 from typing import List
 
 app = FastAPI()
@@ -19,7 +18,7 @@ app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
     "/api/users",
     response_model=List[GetUsers],
     status_code=status.HTTP_200_OK,
-    tags=["users"],
+    tags=["Users"],
 )
 async def get_all_users():
     try:
@@ -36,7 +35,7 @@ async def get_all_users():
     "/api/users",
     status_code=status.HTTP_201_CREATED,
     response_model=CreateUser,
-    tags=["users"],
+    tags=["Users"],
 )
 async def create_user(user: CreateUser):
     try:
@@ -61,7 +60,7 @@ async def create_user(user: CreateUser):
 
 
 # Get one User
-@app.get("/api/users/{id}", response_model=GetUser, status_code=200, tags=["users"])
+@app.get("/api/users/{id}", response_model=GetUser, status_code=200, tags=["Users"])
 async def get_user(id: int = Path(..., title="User ID")):
     try:
         user = db.session.query(User).filter(User.user_id == id).first()
@@ -77,7 +76,7 @@ async def get_user(id: int = Path(..., title="User ID")):
     "/api/users/{id}",
     response_model=UserResponse,
     status_code=status.HTTP_202_ACCEPTED,
-    tags=["users"],
+    tags=["Users"],
 )
 async def update_user(id: int = Path(..., title="User ID"), data: UpdateUser = None):
     try:
@@ -93,6 +92,27 @@ async def update_user(id: int = Path(..., title="User ID"), data: UpdateUser = N
         db.session.commit()
         db.session.refresh(user)
         return user
+    except Exception as e:
+        db.session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
+
+
+# Delete a User
+@app.delete("/api/users/{id}", tags=["Users"])
+async def delete_user(id: int = Path(..., title="User ID")):
+    try:
+        user = db.session.query(User).filter(User.user_id == id).first()
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"User with ID: {id} does not exist.",
+            )
+        db.session.delete(user)
+        db.session.commit()
+        return f"User has been Deleted."
     except Exception as e:
         db.session.rollback()
         raise HTTPException(
