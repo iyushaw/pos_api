@@ -71,7 +71,7 @@ class PurchaseOrder(Base):
 class User(Base):
     __tablename__ = "tbluser"
     user_id = Column(Integer, primary_key=True)
-    username = Column(String(30), nullable=False)
+    username = Column(String(30), nullable=False, unique=True)
     password = Column(String(30), nullable=False)
     fullname = Column(String(50), nullable=False)
     designation = Column(Integer, nullable=False)

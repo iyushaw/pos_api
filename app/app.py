@@ -51,7 +51,7 @@ async def create_user(user: CreateUser):
 
         db.session.add(new_user)
         db.session.commit()
-        db.session.close()
+        # db.session.close()
         return new_user
     except Exception as e:
         # Rollback the session in case of an error
@@ -76,7 +76,7 @@ async def get_user(id: int = Path(..., title="User ID")):
 @app.put(
     "/api/users/{id}",
     response_model=UserResponse,
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_202_ACCEPTED,
     tags=["users"],
 )
 async def update_user(id: int = Path(..., title="User ID"), data: UpdateUser = None):
